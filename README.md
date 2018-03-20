@@ -5,4 +5,4 @@ A simple C++ implementation of some of the most common Path Finding Algorithms.
 
 ### GRAPH PATH FINDING
 
-![GraphPathFinding.gif](../master/Resources/GraphPathFinding.gif)
+![GraphPathFinding.gif](../master/PathFinding/Resources/GraphPathFinding.gif)

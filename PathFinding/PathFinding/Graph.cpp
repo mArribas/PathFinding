@@ -1,20 +1,20 @@
 #include "Graph.h"
 
 #include "DebugNew.h"
-#include "Vertex.h"
+#include "Node.h"
 #include "AdjacencyMatrix.h"
 
 #define TORAD(x) (x * (PI / 180.f))
 
 unsigned int CGraph::sIndex = 0;
 
-CGraph::CGraph (const Vertices vertices) : mVertices{ vertices }
+CGraph::CGraph (const Nodes nodes) : mNodes{ nodes }
 {
-    mAdjacencyMatrix = new CAdjacencyMatrix{ mVertices.size () };
+    mAdjacencyMatrix = new CAdjacencyMatrix{ mNodes.size () };
 
-    for (auto& vertex : mVertices)
+    for (auto& node : mNodes)
     {
-        vertex->index = sIndex++;
+        node->index = sIndex++;
     }
 }
 
@@ -32,8 +32,8 @@ void CGraph::CreateDirectionalEdge (
 }
 
 void CGraph::CreateDirectionalEdge (
-    const SVertex* const from,
-    const SVertex* const to,
+    const SNode* const from,
+    const SNode* const to,
     const float          weight)
 {
     CreateDirectionalEdge (from->index, to->index, weight);
@@ -48,77 +48,75 @@ void CGraph::CreateNonDirectionalEdge (
 }
 
 void CGraph::CreateNonDirectionalEdge (
-    const SVertex* const v1,
-    const SVertex* const v2,
+    const SNode* const v1,
+    const SNode* const v2,
     const float          weight)
 {
     CreateNonDirectionalEdge (v1->index, v2->index, weight);
 }
 
-float CGraph::GetEdgeWeight (
-    const SVertex* const v1,
-    const SVertex* const v2) const
+float CGraph::GetEdgeWeight (const SNode* const v1, const SNode* const v2) const
 {
     return mAdjacencyMatrix->GrabEdgeWeight (v1->index, v2->index);
 }
 
-Vertices CGraph::GetVertices (void) const
+Nodes CGraph::GetNodes (void) const
 {
-    return mVertices;
+    return mNodes;
 }
 
-Vertices CGraph::GetAdjacentVertices (const unsigned int index) const
+Nodes CGraph::GetAdjacentNodes (const unsigned int index) const
 {
     const AdjacencyVector adjacentIndices{
         mAdjacencyMatrix->GetAdjacencyVector (index) };
-    Vertices              adjacentVertices;
+    Nodes                 adjacentNodes;
 
-    for (unsigned int vertexIndex : adjacentIndices)
+    for (unsigned int nodeIndex : adjacentIndices)
     {
-        adjacentVertices.push_back (mVertices[vertexIndex]);
+        adjacentNodes.push_back (mNodes[nodeIndex]);
     }
 
-    return adjacentVertices;
+    return adjacentNodes;
 }
 
-Vertices CGraph::GetAdjacentVertices (const SVertex* const vertex) const
+Nodes CGraph::GetAdjacentNodes (const SNode* const node) const
 {
-    return GetAdjacentVertices (vertex->index);
+    return GetAdjacentNodes (node->index);
 }
 
 void CGraph::Draw (void) const
 {
-    for (SVertex* vertex : mVertices)
+    for (SNode* node : mNodes)
     {
-        Vertices adjacentVertices{ GetAdjacentVertices (vertex) };
+        Nodes adjacentNodes{ GetAdjacentNodes (node) };
 
-        vertex->Draw ();
+        node->Draw ();
 
-        if (adjacentVertices.empty ()) continue;
+        if (adjacentNodes.empty ()) continue;
 
-        for (SVertex* adjVertex : adjacentVertices)
+        for (SNode* adjnode : adjacentNodes)
         {
 #pragma warning(push)
 #pragma warning(disable: 4244)
 
-            CVector2D dir   { vertex->position - adjVertex->position };
+            CVector2D dir   { node->position - adjnode->position };
             float     length{ dir.Length () };
 
             dir.Normalize ();
-            dir *= adjVertex->radius * 1.5f;
+            dir *= adjnode->radius * 1.f;
 
             DrawLine (
-                vertex->position.mX
-                , vertex->position.mY
-                , adjVertex->position.mX
-                , adjVertex->position.mY
+                node->position.mX
+                , node->position.mY
+                , adjnode->position.mX
+                , adjnode->position.mY
                 , BLACK
             );
             DrawCircle (
-                adjVertex->position.mX + dir.mX
-                , adjVertex->position.mY + dir.mY
-                , adjVertex->radius / 2.f
-                , vertex->tint);
+                adjnode->position.mX + dir.mX
+                , adjnode->position.mY + dir.mY
+                , adjnode->radius / 4.f
+                , node->tint);
 
             if (length <= 0.f) continue;
 
@@ -126,10 +124,11 @@ void CGraph::Draw (void) const
             dir *= length / 2;
 
             DrawText (
-                std::to_string (GetEdgeWeight (vertex, adjVertex)).c_str ()
-                , adjVertex->position.mX + dir.mX
-                , adjVertex->position.mY + dir.mY
-                , 10
+                std::to_string (
+                    static_cast<int>(GetEdgeWeight (node, adjnode))).c_str ()
+                , adjnode->position.mX + dir.mX
+                , adjnode->position.mY + dir.mY
+                , 30
                 , BLACK);
 
 #pragma warning(pop)

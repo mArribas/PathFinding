@@ -1,77 +1,75 @@
 #include "SearchAlgorithms.h"
 
 #include "DebugNew.h"
-#include "Vertex.h"
+#include "Node.h"
 #include "Graph.h"
 
 #include <queue>
 #include <algorithm>
 #include <limits>
 
-void SearchAlgorithms::BFS (CGraph* const graph, SVertex* const start)
+void SearchAlgorithms::BFS (CGraph* const graph, SNode* const start)
 {
-    for (SVertex* vertex : graph->GetVertices ())
+    for (SNode* node : graph->GetNodes ())
     {
-        vertex->parent  = nullptr;
-        vertex->weight  = 0.0f;
-        vertex->visited =false;
+        node->parent  = nullptr;
+        node->weight  = 0.0f;
+        node->visited =false;
     }
 
-    std::queue<SVertex*> queue;
+    std::queue<SNode*> queue;
     queue.push (start);
 
     while (queue.size () > 0)
     {
-        SVertex* vertex = queue.front ();
+        SNode* node = queue.front ();
         queue.pop ();
 
-        for (SVertex* neighbour : graph->GetAdjacentVertices (vertex))
+        for (SNode* neighbour : graph->GetAdjacentNodes (node))
         {
             if (neighbour->visited == false)
             {
-                neighbour->parent  = vertex;
+                neighbour->parent  = node;
                 neighbour->weight  =
-                    vertex->weight + graph->GetEdgeWeight (vertex, neighbour);
+                    node->weight + graph->GetEdgeWeight (node, neighbour);
                 neighbour->visited = true;
 
                 queue.push (neighbour);
             }
         }
-        vertex->visited = true;
+        node->visited = true;
     }
 }
 
-Vertices SearchAlgorithms::GoalBFS (
-    CGraph* const  graph,
-    SVertex* const start,
-    SVertex* const goal)
+Nodes SearchAlgorithms::GoalBFS (
+    CGraph* const graph,
+    SNode* const  start,
+    SNode* const  goal)
 {
-    if (start == goal)
+    for (SNode* node : graph->GetNodes ())
     {
-        return Vertices{ start };
-    }
-    for (SVertex* vertex : graph->GetVertices ())
-    {
-        vertex->parent  = nullptr;
-        vertex->weight  = 0.0f;
-        vertex->visited = false;
+        node->parent  = nullptr;
+        node->weight  = 0.0f;
+        node->visited = false;
     }
 
-    std::queue<SVertex*> queue;
+    if (start == goal) return Nodes{ start };
+
+    std::queue<SNode*> queue;
     queue.push (start);
 
     while (queue.size () > 0)
     {
-        SVertex* vertex = queue.front ();
+        SNode* node = queue.front ();
         queue.pop ();
 
-        for (SVertex* neighbour : graph->GetAdjacentVertices (vertex))
+        for (SNode* neighbour : graph->GetAdjacentNodes (node))
         {
             if (neighbour->visited == false)
             {
-                neighbour->parent  = vertex;
+                neighbour->parent  = node;
                 neighbour->weight  =
-                    vertex->weight + graph->GetEdgeWeight (vertex, neighbour);
+                    node->weight + graph->GetEdgeWeight (node, neighbour);
                 neighbour->visited = true;
 
                 if (neighbour == goal)
@@ -82,91 +80,89 @@ Vertices SearchAlgorithms::GoalBFS (
                 queue.push (neighbour);
             }
         }
-        vertex->visited = true;
+        node->visited = true;
     }
 
-    // No path to goal vertex exists.
-    return Vertices{};
+    // No path to goal node exists.
+    return Nodes{};
 }
 
 void SearchAlgorithms::DFS (
-    CGraph* const  graph,
-    SVertex* const start,
-    const bool     searchFromRight)
+    CGraph* const graph,
+    SNode* const  start,
+    const bool    searchFromRight)
 {
-    for (SVertex* vertex : graph->GetVertices ())
+    for (SNode* node : graph->GetNodes ())
     {
-        vertex->parent  = nullptr;
-        vertex->weight  = 0.0f;
-        vertex->visited = false;
+        node->parent  = nullptr;
+        node->weight  = 0.0f;
+        node->visited = false;
     }
 
-    std::vector<SVertex*> stack;
+    std::vector<SNode*> stack;
     stack.push_back (start);
 
     while (stack.size () > 0)
     {
-        SVertex* vertex = stack.back ();
+        SNode* node = stack.back ();
         stack.pop_back ();
 
-        Vertices neighbours = graph->GetAdjacentVertices (vertex);
+        Nodes neighbours = graph->GetAdjacentNodes (node);
         if (searchFromRight == true)
         {
             std::reverse (neighbours.begin (), neighbours.end ());
         }
-        for (SVertex* neighbour : neighbours)
+        for (SNode* neighbour : neighbours)
         {
             if (neighbour->visited == false)
             {
-                neighbour->parent  = vertex;
+                neighbour->parent  = node;
                 neighbour->weight  =
-                    vertex->weight + graph->GetEdgeWeight (vertex, neighbour);
+                    node->weight + graph->GetEdgeWeight (node, neighbour);
                 neighbour->visited = true;
 
                 stack.push_back (neighbour);
             }
         }
-        vertex->visited = true;
+        node->visited = true;
     }
 }
 
-Vertices SearchAlgorithms::GoalDFS (
-    CGraph* const  graph,
-    SVertex* const start,
-    SVertex* const goal,
-    const bool     searchFromRight)
+Nodes SearchAlgorithms::GoalDFS (
+    CGraph* const graph,
+    SNode* const  start,
+    SNode* const  goal,
+    const bool    searchFromRight)
 {
-    if (start == goal)
+    for (SNode* node : graph->GetNodes ())
     {
-        return Vertices{ start };
-    }
-    for (SVertex* vertex : graph->GetVertices ())
-    {
-        vertex->parent  = nullptr;
-        vertex->weight  = 0.0f;
-        vertex->visited = false;
+        node->parent  = nullptr;
+        node->weight  = 0.0f;
+        node->visited = false;
     }
 
-    Vertices stack;
+    if (start == goal) return Nodes{ start };
+
+    Nodes stack;
     stack.push_back (start);
 
     while (stack.size () > 0)
     {
-        SVertex* vertex = stack.back ();
+        SNode* node = stack.back ();
         stack.pop_back ();
 
-        Vertices neighbours = graph->GetAdjacentVertices (vertex);
+        Nodes neighbours = graph->GetAdjacentNodes (node);
         if (searchFromRight == true)
         {
             std::reverse (neighbours.begin (), neighbours.end ());
         }
-        for (SVertex* neighbour : neighbours)
+        for (SNode* neighbour : neighbours)
         {
             if (neighbour->visited == false)
             {
-                neighbour->parent = vertex;
+                neighbour->parent = node;
                 neighbour->weight =
-                    vertex->weight + graph->GetEdgeWeight (vertex, neighbour);
+                    node->weight + graph->GetEdgeWeight (node, neighbour);
                 neighbour->visited = true;
 
                 if (neighbour == goal)
@@ -177,111 +173,106 @@ Vertices SearchAlgorithms::GoalDFS (
                 stack.push_back (neighbour);
             }
         }
-        vertex->visited = true;
+        node->visited = true;
     }
 
-    // No path to goal vertex exists.
-    return Vertices{};
+    // No path to goal node exists.
+    return Nodes{};
 }
 
-void SearchAlgorithms::Dijkstra (
-    CGraph* const  graph,
-    SVertex* const start)
+void SearchAlgorithms::Dijkstra (CGraph* const  graph, SNode* const start)
 {
-    Vertices unfinishedVertices;
-    for (SVertex* vertex : graph->GetVertices ())
+    Nodes unfinishedNodes;
+    for (SNode* node : graph->GetNodes ())
     {
-        vertex->parent = nullptr;
-        vertex->weight = std::numeric_limits<float>::infinity ();
-        unfinishedVertices.push_back (vertex);
+        node->parent = nullptr;
+        node->weight = std::numeric_limits<float>::infinity ();
+        unfinishedNodes.push_back (node);
     }
     start->weight = 0.0f;
 
-    while (unfinishedVertices.size () > 0)
+    while (unfinishedNodes.size () > 0)
     {
-        SVertex* vertex = GetClosestVertex (unfinishedVertices);
-        unfinishedVertices.erase (
+        SNode* node = GetClosestnode (unfinishedNodes);
+        unfinishedNodes.erase (
             std::remove (
-                unfinishedVertices.begin ()
-                ,unfinishedVertices.end ()
-                , vertex)
-            , unfinishedVertices.end ());
+                unfinishedNodes.begin ()
+                ,unfinishedNodes.end ()
+                , node)
+            , unfinishedNodes.end ());
 
-        for (SVertex* adjVertex : graph->GetAdjacentVertices (vertex))
+        for (SNode* adjnode : graph->GetAdjacentNodes (node))
         {
-            if (adjVertex->weight >
-                (vertex->weight + graph->GetEdgeWeight (vertex, adjVertex)))
+            if (adjnode->weight >
+                (node->weight + graph->GetEdgeWeight (node, adjnode)))
             {
-                adjVertex->weight =
-                    vertex->weight +
-                    graph->GetEdgeWeight (vertex, adjVertex);
-                adjVertex->parent = vertex;
+                adjnode->weight =
+                    node->weight +
+                    graph->GetEdgeWeight (node, adjnode);
+                adjnode->parent = node;
             }
         }
     }
 }
 
-Vertices SearchAlgorithms::GoalDijkstra (
-    CGraph* const  graph,
-    SVertex* const start,
-    SVertex* const goal)
+Nodes SearchAlgorithms::GoalDijkstra (
+    CGraph* const graph,
+    SNode* const  start,
+    SNode* const  goal)
 {
-    if (start == goal)
+    Nodes unfinishedNodes;
+    for (SNode* node : graph->GetNodes ())
     {
-        return Vertices{ start };
-    }
-    Vertices unfinishedVertices;
-    for (SVertex* vertex : graph->GetVertices ())
-    {
-        vertex->parent = nullptr;
-        vertex->weight = std::numeric_limits<float>::infinity ();
-        unfinishedVertices.push_back (vertex);
+        node->parent = nullptr;
+        node->weight = std::numeric_limits<float>::infinity ();
+        unfinishedNodes.push_back (node);
     }
     start->weight = 0.0f;
 
-    while (unfinishedVertices.size () > 0)
+    if (start == goal) return Nodes{ start };
+
+    while (unfinishedNodes.size () > 0)
     {
-        SVertex* vertex = GetClosestVertex (unfinishedVertices);
-        unfinishedVertices.erase (
+        SNode* node = GetClosestnode (unfinishedNodes);
+        unfinishedNodes.erase (
             std::remove (
-                unfinishedVertices.begin ()
-                , unfinishedVertices.end ()
-                , vertex)
-            , unfinishedVertices.end ());
+                unfinishedNodes.begin ()
+                , unfinishedNodes.end ()
+                , node)
+            , unfinishedNodes.end ());
 
-        if (vertex == goal) return GetPathToSource (vertex);
+        if (node == goal) return GetPathToSource (node);
 
-        for (SVertex* adjVertex : graph->GetAdjacentVertices (vertex))
+        for (SNode* adjnode : graph->GetAdjacentNodes (node))
         {
-            if (adjVertex->weight >
-                (vertex->weight + graph->GetEdgeWeight (vertex, adjVertex)))
+            if (adjnode->weight >
+                (node->weight + graph->GetEdgeWeight (node, adjnode)))
             {
-                adjVertex->weight = 
-                    vertex->weight + graph->GetEdgeWeight (vertex, adjVertex);
-                adjVertex->parent = vertex;
+                adjnode->weight = 
+                    node->weight + graph->GetEdgeWeight (node, adjnode);
+                adjnode->parent = node;
             }
         }
     }
-    return Vertices{};
+    return Nodes{};
 }
 
-SVertex* SearchAlgorithms::GetClosestVertex (const Vertices vector)
+SNode* SearchAlgorithms::GetClosestnode (const Nodes vector)
 {
-    SVertex* candidate = vector[0];
+    SNode* candidate = vector[0];
 
-    for (SVertex* vertex : vector)
+    for (SNode* node : vector)
     {
-        if (vertex->weight < candidate->weight) candidate = vertex;
-
+        if (node->weight < candidate->weight) candidate = node;
     }
 
     return candidate;
 }
 
-Vertices SearchAlgorithms::GetPathToSource (SVertex* start)
+Nodes SearchAlgorithms::GetPathToSource (SNode* start)
 {
-    Vertices path;
-    SVertex* next = start;
+    Nodes  path;
+    SNode* next = start;
 
     while (next != nullptr)
     {

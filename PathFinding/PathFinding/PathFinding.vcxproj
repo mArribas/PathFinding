@@ -139,7 +139,7 @@
     <ClInclude Include="SearchAlgorithms.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Vector2D.h" />
-    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="Node.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

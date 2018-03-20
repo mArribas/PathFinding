@@ -2,7 +2,7 @@
 
 #include "Types.h"
 
-// A matrix that contains the weight of the edge if the vertices are adjacent,
+// A matrix that contains the weight of the edge if the Nodes are adjacent,
 // and -1 if not.
 class CAdjacencyMatrix
 {

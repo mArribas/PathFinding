@@ -103,7 +103,7 @@ void CGraph::Draw (void) const
             float     length{ dir.Length () };
 
             dir.Normalize ();
-            dir *= adjnode->radius * 1.f;
+            dir *= adjnode->size * 1.f;
 
             DrawLine (
                 node->position.mX
@@ -115,7 +115,7 @@ void CGraph::Draw (void) const
             DrawCircle (
                 adjnode->position.mX + dir.mX
                 , adjnode->position.mY + dir.mY
-                , adjnode->radius / 4.f
+                , adjnode->size / 4.f
                 , node->tint);
 
             if (length <= 0.f) continue;
@@ -134,5 +134,25 @@ void CGraph::Draw (void) const
 #pragma warning(pop)
         }
     }
+}
 
+void CGraph::DrawPath (const Nodes path) const
+{
+    if (path.empty ()) return;
+
+    const size_t size = path.size ();
+
+    for (size_t i = 0; i < size - 1; ++i)
+    {
+#pragma warning(push)
+#pragma warning(disable: 4244)
+
+        DrawLineEx (
+            Vector2{ path[i]->position.mX, path[i]->position.mY }
+            , Vector2{ path[i + 1]->position.mX, path[i + 1]->position.mY }
+            , 5.f
+            , BURGUNDY);
+
+#pragma warning(pop)
+    }
 }

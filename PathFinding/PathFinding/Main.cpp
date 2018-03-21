@@ -1,16 +1,18 @@
 #include "DebugNew.h"
 #include "Node.h"
 #include "Graph.h"
-#include "SearchAlgorithms.h"
+#include "GraphSearchAlgorithms.h"
+#include "Grid.h"
+#include "GridSearchAlgorithms.h"
 
-void DrawPath     (const Nodes path);
-void DrawInputMap (void);
+void DrawInputMap  (void);
 
 int main (void)
 {
     int screenWidth  = 800;
     int screenHeight = 400;
 
+    // Graph
     SNode v1;
     SNode v2;
     SNode v3;
@@ -47,18 +49,12 @@ int main (void)
 
     CGraph graph{ nodes };
 
-    graph.CreateNonDirectionalEdge (&v2, &v1);
+    graph.CreateDirectionalEdge (&v1, &v2);
     graph.CreateNonDirectionalEdge (&v2, &v3);
     graph.CreateNonDirectionalEdge (&v4, &v3);
     graph.CreateNonDirectionalEdge (&v5, &v1);
     graph.CreateNonDirectionalEdge (&v5, &v2);
     graph.CreateNonDirectionalEdge (&v5, &v3);
-
-    Nodes path;
-
-    InitWindow (screenWidth, screenHeight, "C++ PATH FINDING");
-
-    SetTargetFPS (60);
 
     bool bfs     { false };
     bool dfs     { false };
@@ -68,6 +64,15 @@ int main (void)
 
     SNode* start{ nullptr };
     SNode* end  { nullptr };
+
+    // Grid.
+    CGrid grid{ 8, 16, 50.f };
+
+    InitWindow (screenWidth, screenHeight, "C++ PATH FINDING");
+
+    SetTargetFPS (60);
+
+    Nodes path;
 
     while (!WindowShouldClose ())
     {
@@ -166,12 +171,15 @@ int main (void)
 
                 if (!end)
                 {
-                    SearchAlgorithms::BFS (&graph, start);
+                    GraphSearchAlgorithms::BreadthFirstSearch (&graph, start);
                     path.clear ();
                 }
                 else
                 {
-                    path = SearchAlgorithms::GoalBFS (&graph, start, end);
+                    path = GraphSearchAlgorithms::BreadthFirstSearch (
+                        &graph
+                        , start
+                        , end);
                 }
             }
             else if (dfs)
@@ -180,12 +188,15 @@ int main (void)
 
                 if (!end)
                 {
-                    SearchAlgorithms::DFS (&graph, start);
+                    GraphSearchAlgorithms::DepthFirstSearch (&graph, start);
                     path.clear ();
                 }
                 else
                 {
-                    path = SearchAlgorithms::GoalDFS (&graph, start, end);
+                    path = GraphSearchAlgorithms::DepthFirstSearch (
+                        &graph
+                        , start
+                        , end);
                 }
             }
             if (dijkstra)
@@ -194,12 +205,12 @@ int main (void)
 
                 if (!end)
                 {
-                    SearchAlgorithms::Dijkstra (&graph, start);
+                    GraphSearchAlgorithms::Dijkstra (&graph, start);
                     path.clear ();
                 }
                 else
                 {
-                    path = SearchAlgorithms::GoalDijkstra (&graph, start, end);
+                    path = GraphSearchAlgorithms::Dijkstra (&graph, start, end);
                 }
             }
         }
@@ -209,9 +220,9 @@ int main (void)
 
         ClearBackground (RAYWHITE);
 
-        DrawPath   (path);
-        graph.Draw ();
-        DrawInputMap ();
+        graph.DrawPath (path);
+        graph.Draw     ();
+        DrawInputMap   ();
 
         if (start)
         {
@@ -238,33 +249,15 @@ int main (void)
         else if (dfs) DrawText ("SEARCH: DFS", 450, 350, 20, GREEN);
         else          DrawText ("SEARCH: NONE", 450, 350, 20, GREEN);
 
+        //grid.Draw     ();
+        //grid.DrawPath (path);
+
         EndDrawing ();
     }
 
     CloseWindow ();
 
     return 0;
-}
-
-void DrawPath (const Nodes path)
-{
-    if (path.empty ()) return;
-
-    const size_t size = path.size ();
-
-    for (size_t i = 0; i < size - 1; ++i)
-    {
-#pragma warning(push)
-#pragma warning(disable: 4244)
-
-        DrawLineEx (
-            Vector2{ path[i]->position.mX, path[i]->position.mY }
-            , Vector2{ path[i + 1]->position.mX, path[i + 1]->position.mY }
-            , 5.f
-            , BURGUNDY);
-
-#pragma warning(pop)
-    }
 }
 
 void DrawInputMap (void)

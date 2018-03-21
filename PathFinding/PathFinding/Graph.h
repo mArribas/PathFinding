@@ -28,11 +28,12 @@ public:
         const float          weight = 1.f);
 
     float GetEdgeWeight    (const SNode* to, const SNode* from) const;
-    Nodes GetNodes         (void) const;
-    Nodes GetAdjacentNodes (const unsigned int index) const;
-    Nodes GetAdjacentNodes (const SNode* const node) const;
+    Nodes GetNodes         (void)                               const;
+    Nodes GetAdjacentNodes (const unsigned int index)           const;
+    Nodes GetAdjacentNodes (const SNode* const node)            const;
 
-    void Draw (void) const;
+    void Draw     (void) const;
+    void DrawPath (const Nodes path) const;
 private:
     static unsigned int sIndex;
 

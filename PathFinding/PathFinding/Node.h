@@ -17,12 +17,11 @@ struct SNode
     {
 #pragma warning(push)
 #pragma warning(disable: 4244)
+        Vector2 nodeSize{ size, size };
+        Vector2 pos { position.mX - size/2, position.mY - size/2 };
 
-        Vector2 size{ radius, radius };
-        Vector2 pos { position.mX - radius/2, position.mY - radius/2 };
 
-
-        DrawRectangleV (pos , size , tint);
+        DrawRectangleV (pos , nodeSize , tint);
         /*DrawCircle (
             position.mX
             , position.mY
@@ -30,16 +29,28 @@ struct SNode
             , BLACK);*/
         DrawText   (
             label.c_str ()
-            , position.mX - radius/2.5f
-            , position.mY - radius/2.5f
+            , position.mX - size / 2.5f
+            , position.mY - size / 2.5f
             , 20
             , BLACK);
-        DrawText   (
-            std::to_string (static_cast<int>(weight)).c_str ()
-            , position.mX - radius
-            , position.mY - radius
-            , 15
-            , tint);
+        if (!visited)
+        {
+            DrawText (
+                "-"
+                , position.mX - size
+                , position.mY - size
+                , 15
+                , tint);
+        }
+        else
+        {
+            DrawText (
+                std::to_string (static_cast<int>(weight)).c_str ()
+                , position.mX - size
+                , position.mY - size
+                , 15
+                , tint);
+        }
 
 #pragma warning(pop)
     }
@@ -52,7 +63,7 @@ struct SNode
     bool         visited { false };
     // Current position in the screen.
     CVector2D    position{ 0.f,0.f };
-    float        radius  { 30.f };
+    float        size    { 30.f };
     // The tint with which the node will be drawn.
     Color        tint    { 255,255,255,255 };
 };

@@ -128,15 +128,19 @@
   <ItemGroup>
     <ClCompile Include="AdjacencyMatrix.cpp" />
     <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GridSearchAlgorithms.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="SearchAlgorithms.cpp" />
+    <ClCompile Include="GraphSearchAlgorithms.cpp" />
     <ClCompile Include="Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdjacencyMatrix.h" />
     <ClInclude Include="DebugNew.h" />
     <ClInclude Include="Graph.h" />
-    <ClInclude Include="SearchAlgorithms.h" />
+    <ClInclude Include="GraphSearchAlgorithms.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="GridSearchAlgorithms.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="Node.h" />

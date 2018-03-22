@@ -19,6 +19,7 @@ public:
 
     void Draw     (void)             const;
     void DrawPath (const Nodes path) const;
+    void DrawNode (const int index)  const;
 private:
     static unsigned int sIndex;
 

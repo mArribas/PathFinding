@@ -26,8 +26,5 @@ namespace GraphSearchAlgorithms
         SNode* const  start,
         SNode* const  goal = nullptr);
 
-    // Returns the node with the lowest weight in the vector passed.
-    SNode* GetClosestnode (const Nodes vector);
-
     Nodes GetPathToSource (SNode* start);
 }

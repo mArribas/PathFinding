@@ -6,6 +6,12 @@ class CGrid;
 
 namespace GridSearchAlgorithms
 {
+    enum EHeuristic
+    {
+        eHeuristic_Euclidean,
+        eHeuristic_Manhattan
+    };
+
     // Applies Breadth First Search algorithm and returns a path to the goal.
     // If the goal cannot be reached, returns an empty path.
     Nodes BreadthFirstSearch (
@@ -25,9 +31,19 @@ namespace GridSearchAlgorithms
         CGrid* const grid,
         const int    start,
         const int    goal = -1);
+    // Applies A star algorithm and returns a path to the goal. If the goal
+    // cannot be reached, returns an empty path.
+    Nodes AStar (
+        CGrid* const     grid,
+        const int        start,
+        const int        goal,
+        const EHeuristic heuristic = eHeuristic_Manhattan);
 
-    // Returns the node with the lowest weight in the vector passed.
-    SNode* GetClosestnode (const Nodes vector, const WeightVector weights);
-
-    Nodes GetPathToSource (SNode* start);
+    // Applies BiDirectional A star algorithm and returns a path to the goal.
+    // If the goal cannot be reached, returns an empty path.
+    Nodes BiDirectionalAStar (
+        CGrid* const     grid,
+        const int        start,
+        const int        goal,
+        const EHeuristic heuristic = eHeuristic_Manhattan);
 }

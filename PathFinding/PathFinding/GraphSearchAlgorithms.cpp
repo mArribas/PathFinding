@@ -8,6 +8,22 @@
 #include <algorithm>
 #include <limits>
 
+namespace
+{
+    // Returns the node with the lowest weight in the vector passed.
+    SNode* GetClosestnode (const Nodes vector)
+    {
+        SNode* candidate = vector[0];
+
+        for (SNode* node : vector)
+        {
+            if (node->weight < candidate->weight) candidate = node;
+        }
+
+        return candidate;
+    }
+}
+
 Nodes GraphSearchAlgorithms::BreadthFirstSearch (
     CGraph* const graph,
     SNode* const  start,
@@ -24,6 +40,7 @@ Nodes GraphSearchAlgorithms::BreadthFirstSearch (
 
     std::queue<SNode*> queue;
     queue.push (start);
+    queue.front ()->visited = true;
 
     while (queue.size () > 0)
     {
@@ -32,7 +49,7 @@ Nodes GraphSearchAlgorithms::BreadthFirstSearch (
 
         for (SNode* adjacentNode : graph->GetAdjacentNodes (node))
         {
-            if (adjacentNode->visited == false)
+            if (!adjacentNode->visited)
             {
                 adjacentNode->parent  = node;
                 adjacentNode->weight  =
@@ -47,7 +64,6 @@ Nodes GraphSearchAlgorithms::BreadthFirstSearch (
                 queue.push (adjacentNode);
             }
         }
-        node->visited = true;
     }
 
     // No path to goal node exists.
@@ -71,6 +87,7 @@ Nodes GraphSearchAlgorithms::DepthFirstSearch (
 
     Nodes stack;
     stack.push_back (start);
+    stack.back ()->visited = true;
 
     while (stack.size () > 0)
     {
@@ -84,7 +101,7 @@ Nodes GraphSearchAlgorithms::DepthFirstSearch (
         }
         for (SNode* adjacentNode : adjacentNodes)
         {
-            if (adjacentNode->visited == false)
+            if (!adjacentNode->visited)
             {
                 adjacentNode->parent  = node;
                 adjacentNode->weight  =
@@ -99,7 +116,6 @@ Nodes GraphSearchAlgorithms::DepthFirstSearch (
                 stack.push_back (adjacentNode);
             }
         }
-        node->visited = true;
     }
 
     // No path to goal node exists.
@@ -149,18 +165,6 @@ Nodes GraphSearchAlgorithms::Dijkstra (
         }
     }
     return Nodes{};
-}
-
-SNode* GraphSearchAlgorithms::GetClosestnode (const Nodes vector)
-{
-    SNode* candidate = vector[0];
-
-    for (SNode* node : vector)
-    {
-        if (node->weight < candidate->weight) candidate = node;
-    }
-
-    return candidate;
 }
 
 Nodes GraphSearchAlgorithms::GetPathToSource (SNode* start)

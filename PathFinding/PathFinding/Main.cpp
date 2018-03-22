@@ -56,11 +56,13 @@ int main (void)
     graph.CreateNonDirectionalEdge (&v5, &v2);
     graph.CreateNonDirectionalEdge (&v5, &v3);
 
-    bool bfs     { false };
-    bool dfs     { false };
-    bool dijkstra{ false };
-    bool setStart{ false };
-    bool setEnd  { false };
+    bool bfs       { false };
+    bool dfs       { false };
+    bool dijkstra  { false };
+    bool aStar     { false };
+    bool biDirAStar{ false };
+    bool setStart  { false };
+    bool setEnd    { false };
 
     SNode* start{ nullptr };
     SNode* end  { nullptr };
@@ -77,9 +79,54 @@ int main (void)
     while (!WindowShouldClose ())
     {
         // Input.
-        if (IsKeyDown (KEY_S)) setStart = true;
+        if (IsKeyDown (KEY_A))
+        {
+            bfs        = true;
+            dfs        = false;
+            dijkstra   = false;
+            aStar      = false;
+            biDirAStar = false;
+        }
+
+        if (IsKeyDown (KEY_B))
+        {
+            bfs        = false;
+            dfs        = true;
+            dijkstra   = false;
+            aStar      = false;
+            biDirAStar = false;
+        }
+
+        if (IsKeyDown (KEY_C))
+        {
+            bfs        = false;
+            dfs        = false;
+            dijkstra   = true;
+            aStar      = false;
+            biDirAStar = false;
+        }
+
+        if (IsKeyDown (KEY_D))
+        {
+            bfs        = false;
+            dfs        = false;
+            dijkstra   = false;
+            aStar      = true;
+            biDirAStar = false;
+        }
+
+        if (IsKeyDown (KEY_E))
+        {
+            bfs        = false;
+            dfs        = false;
+            dijkstra   = false;
+            aStar      = false;
+            biDirAStar = true;
+        }
+
+        /*if (IsKeyDown (KEY_S)) setStart = true;
         if (IsKeyDown (KEY_E)) setEnd   = true;
-        if (IsKeyDown (KEY_D)) end      = nullptr;
+        if (IsKeyDown (KEY_R)) end      = nullptr;
 
         if (IsKeyDown (KEY_ONE) && setStart)
         {
@@ -142,27 +189,6 @@ int main (void)
             end    = &v6;
         }
 
-        if (IsKeyDown (KEY_A))
-        {
-            bfs      = true;
-            dfs      = false;
-            dijkstra = false;
-        }
-
-        if (IsKeyDown (KEY_B))
-        {
-            bfs      = false;
-            dfs      = true;
-            dijkstra = false;
-        }
-
-        if (IsKeyDown (KEY_C))
-        {
-            bfs      = false;
-            dfs      = false;
-            dijkstra = true;
-        }
-
         if (IsKeyDown (KEY_ENTER))
         {
             if (bfs)
@@ -213,14 +239,19 @@ int main (void)
                     path = GraphSearchAlgorithms::Dijkstra (&graph, start, end);
                 }
             }
-        }
+        }*/
+
+        start       = grid.GetNode (27);
+        start->tint = DARKBLUE;
+        end         = grid.GetNode (90);
+        end->tint   = ORANGE;
 
         // Draw.
         BeginDrawing ();
 
         ClearBackground (RAYWHITE);
 
-        graph.DrawPath (path);
+        /*graph.DrawPath (path);
         graph.Draw     ();
         DrawInputMap   ();
 
@@ -242,15 +273,60 @@ int main (void)
         else
         {
             DrawText ("END: NONE", 450, 325, 20, GREEN);
+        }*/
+
+        if (IsKeyDown (KEY_ENTER))
+        {
+            if (bfs)
+            {
+                path = GridSearchAlgorithms::BreadthFirstSearch (
+                    &grid
+                    , start->index
+                    , end->index);
+            }
+            else if (dfs)
+            {
+                path = GridSearchAlgorithms::DepthFirstSearch (
+                    &grid
+                    , start->index
+                    , end->index);
+            }
+            else if (dijkstra)
+            {
+                path = GridSearchAlgorithms::Dijkstra (
+                    &grid
+                    , start->index
+                    , end->index);
+            }
+            else if (aStar)
+            {
+                path = GridSearchAlgorithms::AStar (
+                    &grid
+                    , start->index
+                    , end->index
+                    , GridSearchAlgorithms::eHeuristic_Euclidean);
+            }
+            else if (biDirAStar)
+            {
+                path = GridSearchAlgorithms::BiDirectionalAStar (
+                    &grid
+                    , start->index
+                    , end->index
+                    , GridSearchAlgorithms::eHeuristic_Manhattan);
+            }
         }
+        
+        grid.Draw     ();
+        grid.DrawPath (path);
+        grid.DrawNode (start->index);
+        grid.DrawNode (end->index);
 
-        if (dijkstra) DrawText ("SEARCH: DIJKSTRA", 450, 350, 20, GREEN);
-        else if (bfs) DrawText ("SEARCH: BFS", 450, 350, 20, GREEN);
-        else if (dfs) DrawText ("SEARCH: DFS", 450, 350, 20, GREEN);
-        else          DrawText ("SEARCH: NONE", 450, 350, 20, GREEN);
-
-        //grid.Draw     ();
-        //grid.DrawPath (path);
+        if (dijkstra)        DrawText ("SEARCH: DIJKSTRA", 600, 350, 20, LIME);
+        else if (bfs)        DrawText ("SEARCH: BFS", 600, 350, 20, LIME);
+        else if (dfs)        DrawText ("SEARCH: DFS", 600, 350, 20, LIME);
+        else if (aStar)      DrawText ("SEARCH: A*", 600, 350, 20, LIME);
+        else if (biDirAStar) DrawText ("SEARCH: BiDir A*", 600, 350, 20, LIME);
+        else                 DrawText ("SEARCH: NONE", 600, 350, 20, LIME);
 
         EndDrawing ();
     }
@@ -274,7 +350,7 @@ void DrawInputMap (void)
         , 30
         , 20
         , DARKGRAY);
-    DrawText ("CLEAR END: PRESS 'D'.", 450, 55, 20, DARKGRAY);
+    DrawText ("CLEAR END: PRESS 'R'.", 450, 55, 20, DARKGRAY);
     DrawText ("ENABLE BFS: PRESS 'A'.", 450, 80, 20, DARKGRAY);
     DrawText ("ENABLE DFS: PRESS 'B'.", 450, 105, 20, DARKGRAY);
     DrawText ("ENABLE DIJKSTRA: PRESS 'C'.", 450, 130, 20, DARKGRAY);

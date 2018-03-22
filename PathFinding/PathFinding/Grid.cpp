@@ -197,3 +197,38 @@ void CGrid::DrawPath (const Nodes path) const
 #pragma warning(pop)
     }
 }
+
+void CGrid::DrawNode (const int index) const
+{
+    assert ((index >= 0) && (index < static_cast<int>(mRows * mColumns)));
+
+#pragma warning(push)
+#pragma warning(disable: 4244)
+
+    DrawRectangle (
+        mNodes[index]->position.mX - mNodes[index]->size / 2
+        , mNodes[index]->position.mY - mNodes[index]->size / 2
+        , mNodes[index]->size
+        , mNodes[index]->size
+        , mNodes[index]->tint);
+    DrawRectangleLines (
+        mNodes[index]->position.mX - mNodes[index]->size / 2
+        , mNodes[index]->position.mY - mNodes[index]->size / 2
+        , mNodes[index]->size
+        , mNodes[index]->size
+        , BLACK);
+    DrawText (
+        std::to_string (static_cast<int>(mNodes[index]->weight)).c_str ()
+        , mNodes[index]->position.mX - mNodes[index]->size / 2.5f
+        , mNodes[index]->position.mY - mNodes[index]->size / 2.5f
+        , mNodes[index]->size * 0.33f
+        , BLACK);
+    DrawText (
+        std::to_string (static_cast<int>(mWeights[mNodes[index]->index])).c_str ()
+        , mNodes[index]->position.mX - mNodes[index]->size / 2.5f
+        , mNodes[index]->position.mY + mNodes[index]->size / 5.f
+        , mNodes[index]->size * 0.33f
+        , RED);
+
+#pragma warning(pop)
+}
